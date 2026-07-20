@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
+	"time"
 )
 
 type Database struct {
@@ -66,6 +67,13 @@ func echoHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.PathValue("arg")))
 }
 
+func logMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Kyaa~")
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	db := &Database{
 		UserInfo: make(map[string]int),
@@ -77,5 +85,13 @@ func main() {
 	mux.HandleFunc("GET /user/{name}", db.getUserHandler)
 	mux.HandleFunc("DELETE /user/{name}", db.deleteUserHandler)
 
-	log.Fatal(http.ListenAndServe(":8080", mux))
+	s := &http.Server{
+		Addr:           ":8080",
+		Handler:        logMiddleware(mux),
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	}
+
+	log.Fatal(s.ListenAndServe())
 }
