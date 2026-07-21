@@ -1,12 +1,15 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"html"
 	"log"
 	"net/http"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -145,6 +148,10 @@ func main() {
 	db := &Database{
 		UserInfo: make(map[string]int),
 	}
+
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /echo/{arg}", echoHandler)
@@ -161,6 +168,22 @@ func main() {
 		MaxHeaderBytes: 1 << 20,
 	}
 
-	log.Printf("Server listening on http://localhost:8080")
-	log.Fatal(s.ListenAndServe())
+	go func() {
+		log.Printf("Server listening on http://localhost:8080")
+		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("HTTP server error: %v", err)
+		}
+	}()
+
+	<-ctx.Done()
+	log.Println("Shutdown signal received")
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if err := s.Shutdown(shutdownCtx); err != nil {
+		log.Printf("Shutdown error: %v", err)
+	}
+
+	log.Println("Gracefully shutting down.")
 }
