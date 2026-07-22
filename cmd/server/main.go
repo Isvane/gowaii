@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"log/slog"
 	"net/http"
 	"os/signal"
 	"syscall"
@@ -13,6 +14,8 @@ import (
 )
 
 func main() {
+	logger := slog.Default()
+
 	repo := repository.NewUserRepo()
 	db := &api.Database{
 		Repo: repo,
@@ -31,7 +34,7 @@ func main() {
 
 	s := &http.Server{
 		Addr:           ":8080",
-		Handler:        api.LogMiddleware(mux),
+		Handler:        api.LogMiddleware(logger)(mux),
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,

@@ -1,4 +1,4 @@
-# 🙇‍♂️ Gomen
+# Gomen
 
 This repository is my first introduction in learning the Go programming language.
 

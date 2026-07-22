@@ -14,6 +14,27 @@ type Database struct {
 	Repo *repository.UserRepo
 }
 
+type responseWriterWrapper struct {
+	http.ResponseWriter
+	statusCode  int
+	wroteHeader bool
+}
+
+func (rw *responseWriterWrapper) WriteHeader(code int) {
+	if !rw.wroteHeader {
+		rw.statusCode = code
+		rw.wroteHeader = true
+		rw.ResponseWriter.WriteHeader(code)
+	}
+}
+
+func (rw *responseWriterWrapper) Write(b []byte) (int, error) {
+	if !rw.wroteHeader {
+		rw.WriteHeader(http.StatusOK)
+	}
+	return rw.ResponseWriter.Write(b)
+}
+
 func (d *Database) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 
