@@ -8,8 +8,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Isvane/gohan/internal/api"
-	"github.com/Isvane/gohan/internal/repository"
+	"github.com/Isvane/gomen/internal/api"
+	"github.com/Isvane/gomen/internal/repository"
 )
 
 func main() {

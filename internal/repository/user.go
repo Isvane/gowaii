@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sync"
 
-	models "github.com/Isvane/gohan/internal/model"
+	models "github.com/Isvane/gomen/internal/model"
 )
 
 var (

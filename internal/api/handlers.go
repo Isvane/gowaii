@@ -6,8 +6,8 @@ import (
 	"html"
 	"net/http"
 
-	models "github.com/Isvane/gohan/internal/model"
-	"github.com/Isvane/gohan/internal/repository"
+	models "github.com/Isvane/gomen/internal/model"
+	"github.com/Isvane/gomen/internal/repository"
 )
 
 type Database struct {
