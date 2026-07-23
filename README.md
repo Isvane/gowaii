@@ -46,3 +46,4 @@ go run cmd/server/main.go
 | **Middleware** | Custom HTTP logging wrapper with `slog` |
 | **Hardening** | Read/write timeouts and OS signal-based graceful shutdown |
 | **Architecture** | Standard `cmd/` vs `internal/` package separation |
+| **Testing** | How to test a Go handlers |
